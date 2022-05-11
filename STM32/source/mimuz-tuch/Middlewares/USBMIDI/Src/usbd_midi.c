@@ -135,6 +135,8 @@ static uint8_t  USBD_MIDI_DataOut (USBD_HandleTypeDef *pdev, uint8_t epnum)
 }
 
 void USBD_MIDI_SendPacket (){
+  if(!pInstance)
+    return;
   uint16_t USB_Tx_ptr;
   uint16_t USB_Tx_length;
 
