@@ -45,14 +45,8 @@ static uint16_t MIDI_DataRx(uint8_t *msg, uint16_t length){
 }
 
 void sendMidiMessage(uint8_t *msg, uint16_t size){
-  if(size == 4){
-//	APP_Rx_Buffer[0] = msg[0];
-//	APP_Rx_Buffer[1] = msg[1];
-//	APP_Rx_Buffer[2] = msg[2];
-//	APP_Rx_Buffer[3] = msg[3];
-//    USBD_MIDI_SendData(&hUsbDeviceFS, APP_Rx_Buffer, size);
+  if(!(size & 3))
     MIDI_DataTx(msg, size);
-  }
 }
 
 static uint16_t MIDI_DataTx(uint8_t *msg, uint16_t length){
