@@ -25,6 +25,7 @@ extern void mimuz_init(void);
 extern void setHdlNoteOff(void (*fptr)(uint8_t ch, uint8_t note, uint8_t vel));
 extern void setHdlNoteOn(void (*fptr)(uint8_t ch, uint8_t note, uint8_t vel));
 extern void setHdlCtlChange(void (*fptr)(uint8_t ch, uint8_t num, uint8_t value));
+extern void setHdlAll(uint16_t (*fptr)(uint8_t *msg, uint16_t length));
 
 extern void sendNoteOn(uint8_t ch, uint8_t note, uint8_t vel);
 extern void sendNoteOff(uint8_t ch, uint8_t note);

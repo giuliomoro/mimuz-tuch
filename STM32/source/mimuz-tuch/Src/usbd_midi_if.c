@@ -23,6 +23,7 @@ stB4Arrq rxq;
 void (*cbNoteOff)(uint8_t ch, uint8_t note, uint8_t vel);
 void (*cbNoteOn)(uint8_t ch, uint8_t note, uint8_t vel);
 void (*cbCtlChange)(uint8_t ch, uint8_t num, uint8_t value);
+uint16_t (*cbAll)(uint8_t *msg, uint16_t length);
 
 static int checkMidiMessage(uint8_t *pMidi);
 
@@ -85,6 +86,11 @@ void mimuz_init(void){
   b4arrq_init(&rxq);
 }
 
+void setHdlAll(uint16_t (*fptr)(uint8_t *msg, uint16_t length))
+{
+  cbAll = fptr;
+}
+
 void setHdlNoteOff(void (*fptr)(uint8_t ch, uint8_t note, uint8_t vel)){
   cbNoteOff = fptr;
 }
@@ -128,19 +134,25 @@ void processMidiMessage(){
   if(rxq.num > 0){
     pbuf = (uint8_t *)b4arrq_pop(&rxq);
     kindmessage = checkMidiMessage(pbuf);
+    uint8_t handled = 0;
     if(kindmessage == 1){
       if(cbNoteOff != NULL){
         (*cbNoteOff)(*(pbuf+1)&0x0f,*(pbuf+2)&0x7f,*(pbuf+3)&0x7f);
+        handled = 1;
       }
     }else if(kindmessage == 2){
       if(cbNoteOn != NULL){
         (*cbNoteOn)(*(pbuf+1)&0x0f,*(pbuf+2)&0x7f,*(pbuf+3)&0x7f);
+        handled = 1;
       }
     }else if(kindmessage == 3){
       if(cbCtlChange != NULL){
         (*cbCtlChange)(*(pbuf+1)&0x0f,*(pbuf+2)&0x7f,*(pbuf+3)&0x7f);
+        handled = 1;
       }
     }
+    if(!handled && cbAll)
+      cbAll(pbuf, 4);
   }
   // Tx
   USBD_MIDI_SendPacket();
